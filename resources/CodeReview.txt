@@ -1,0 +1,55 @@
+While we did find some flaws and coupling issues, we overall had a positive experience working with
+both this code and the providers. The providers were prompt and responsive, eager to answer any
+questions or provide edits to code. When it came to bridging the gap between our model and their
+code, we found that we lacked some interfaces and classes that their interfaces depended on
+(like ICell and AValue). We remedied this by asking for the ICell interface and asking for the
+providers to make and share an IValue interface. They were equally helpful in updating the
+interfaces with these new interfaces and classes.
+
+Design / Implementation Critique: Overall, we felt their design was structured in a relatively
+elegant and uncoupled way. They handled using read only spreadsheets well by using a
+ReadOnlySpreadsheetModel that was extended by their mutable SpreadsheetModel. Despite their one or
+two instances of coupling in the model, their controller was uncoupled from the view through the use
+of a Features class, which we appreciated. Some of the design choices they made when it came to
+data definitions seemed to break down at certain points in the code. For example, when deciding
+how to display a cell’s contents, instanceof checking is employed instead of dynamic dispatch,
+presumably because it wasn’t an option. The providers also used a lot of parameterization in
+their code instead of delegating to different kinds of objects, which we found challenging to
+work with and understand (we're not sure if parameterization was entirely necessary as it seemed
+to go against the design recipe for union data). Another concern we had was that some of the methods
+found in the ReadOnlySpreadsheetModel weren't model specific (e.g. retrieving the contents of a cell
+seemed more relevant to the ICell interface than the model itself). We believe that methods that
+weren't directly relevant force the model to be more coupled than it should be.
+We thought that our providers implementation of their Visual and Editable views were clean and we
+appreciated how they broke the components down into smaller classes. We also liked their use of
+constants in their view package. Their implementation was functional and correct. When we attempted
+to interact with the view, the results seemed to be correct and what we expected, despite the high
+amount of cases we tried.
+
+Documentation critique: We felt that the documentation was lacking for some methods, but was
+generally adequate. For example, their ICell interface included the method setRestructure(),
+which was documented as “Resets the precalculated value of function cells.”
+We found this to be unclear as we didn't know what the precalculated value was or what value 'reset'
+changed it to. In our initial approach, our AdapterCell (which implemented providers’ ICell and was
+composed of our Cell) left the implementation of this void method empty and we
+ultimately embedded their view into our code successfully without touching this method.
+We suspected setRestructure() was used to increase performance, but asked our providers for
+clarification and they confirmed out suspicions. More documentation about what methods
+were necessary for working implementations and what were focused solely on
+performance would have been helpful. Overall, we were able to understand what the classes and
+methods were intended for.
+
+Design limitations & suggestions for improvement:
+A difficulty we faced was in our -provider implementation in BeyondGood, because of the way that
+our provider constructs their view. This construction requires a Features argument, which is then
+passed down to each JPanel layer that needs to establish the observers. The initial construction of
+their view presented a cyclic-type issue: our AdapterController required a model and view, and
+their View required a model and controller. Obviously, one has to be made before the other which
+forces us to (1) have a placeholder value, (2) make our Adapter Controller extend our Controller
+implementation and implement an AdapterController Interface, and (3) include an updateView()
+method in our Adapter Controller which accepts an ISpreadsheetView and changes this view from the
+placeholder to the new view. Though our work-around implementation works, we believe
+that the provider’s code could have been more elegant by including a addFeatures() method
+that accepts a Features object. This would be called in the constructor
+of the Controller (similarly, passing the Controller in as the parameter), but would simplify
+the construction the Providers’ view and eliminate this cylic-type issue in the main method.

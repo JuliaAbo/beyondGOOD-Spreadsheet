@@ -1,0 +1,13 @@
+
+When we started designing our model, we did not take performance into consideration and instead
+had to try and make our code more performance-friendly towards the end of the model-designing
+process. This made it difficult for us to manage performance when we could have handled it easier
+from the beginning. We would have liked to have made an ICell interface from the beginning instead
+of just using the Cell class. In reviewing the provider code, we noticed that we liked the way
+our providers implemented their ReadOnlySpreadsheetModel, which was a class that their mutable
+spreadsheet extended. We think that this might have been a more elegant design than what we
+employed for the same purpose, which was a model that threw exceptions for mutation methods.
+
+Our experience with the providers was overall very positive. Our providers were very responsive and
+timely in their correspondence with us and assisted in editing code according to our requests.
+
